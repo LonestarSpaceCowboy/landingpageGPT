@@ -7,12 +7,24 @@
     </template>
   </v-app-bar>
 
-  <!--Custom card with refresh-->
-  <custom-feed
-    class="feed-cards"
-    :userData="userProfile"
-    :productData="product"
-  />
+  <v-row>
+    <v-col>
+      <!--Custom card with refresh-->
+      <custom-feed
+        ref="feed"
+        class="feed-cards"
+        :userData="userProfile"
+        :productData="product"
+      />
+    </v-col>
+    <v-col>
+      <!--Profile Sandbox to enter custom values-->
+      <profile-sandbox
+        @submit-profile-info="setProfileInfo"
+        :userProfile="userProfile"
+      />
+    </v-col>
+  </v-row>
 </template>
 
 <script>
@@ -23,19 +35,8 @@ export default {
   },
   data() {
     return {
-      // userProfile: {
-      //   name: "Ian Fenwick",
-      //   recentSites: ["https://google.com", "https://facebook.com", "https://crypto.com", "https://coinbase.com", "https://github.com", "https://cryptominers.com"],
-      // },
-      // product: {
-      //   type: "savings account",
-      //   productName: "High yield savings account",
-      //   company: "Bank of America",
-      //   offer: "3% APY on all deposits.  Fraud protection and no fees.  Cash back on purchases of electronics and groceries.",
-      //   offerURL: "https://www.bankofamerica.com/high-yield-savings&EYJ192374KL/",
-      // },
       userProfile: {
-        name: "Steven",
+        name: "Steven Pinker",
         recentSites: [
           "https://google.com",
           "https://facebook.com",
@@ -54,12 +55,20 @@ export default {
                 Your policy builds cash at a constant rate, tax-free in a secure account.
                 You do not need to choose a term length – your life insurance coverage lasts your whole life.
                 You may be able to access the cash value of your plan before it expires.`,
-        offerURL:
-          "https://www.merryllynch.com/whole-life&EYJ192374KL/",
+        offerURL: "https://www.merryllynch.com/whole-life&EYJ192374KL/",
       },
     };
   },
   methods: {
+    async setProfileInfo(profileInfo) {
+      this.userProfile = {
+        name: profileInfo.name,
+        recentSites: profileInfo.recentSites.split(","),
+        location: profileInfo.location,
+      };
+      await this.$nextTick();
+      this.$refs.feed.regenHandler();
+    },
     //Get the user's IP location
     async getIPLocation() {
       let lat = 0;
@@ -118,7 +127,7 @@ export default {
 .feed-cards {
   padding: 1em;
   margin: 1em;
-  width: 50%;
+  width: 80%;
   max-width: 600px;
 }
 </style>
